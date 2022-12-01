@@ -11,8 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Player")
-public class Player {
+@Table(name = "FOOTBALLER")
+public class Footballer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -26,6 +26,6 @@ public class Player {
     @Column(nullable = false)
     private Integer experience;
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false, foreignKey = @ForeignKey(name = "fk_player_team"))
-    private Team team;
+    @JoinColumn(name = "football_club_id", nullable = false, foreignKey = @ForeignKey(name = "fk_footballer_football_club"))
+    private FootballClub footballClub;
 }
