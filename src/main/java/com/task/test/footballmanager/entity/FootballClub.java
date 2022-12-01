@@ -8,20 +8,20 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TEAM")
-public class Team {
+@Table(name = "FOOTBALL_CLUB")
+public class FootballClub {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "commission")
+    @Column(name = "commission", nullable = false)
     private Integer commission;
 
-    @Column(name = "balance")
+    @Column(name = "balance", nullable = false)
     private Long balance;
 }
