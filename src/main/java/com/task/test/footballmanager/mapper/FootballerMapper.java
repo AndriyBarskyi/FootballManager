@@ -3,6 +3,7 @@ package com.task.test.footballmanager.mapper;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 
 import com.task.test.footballmanager.dto.FootballerDTO;
@@ -15,4 +16,8 @@ public interface FootballerMapper {
 
     @Mapping(target = "clubId", source = "footballClub.id")
     FootballerDTO entityToDto(Footballer comment);
+
+    @Mapping(target = "footballClub.id", source = "clubId")
+    void updateFootballer(@MappingTarget Footballer footballerFromDB,
+        FootballerDTO newFootballer);
 }

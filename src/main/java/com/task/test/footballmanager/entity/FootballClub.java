@@ -1,5 +1,7 @@
 package com.task.test.footballmanager.entity;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,5 +25,17 @@ public class FootballClub {
     private Integer commission;
 
     @Column(name = "balance", nullable = false)
-    private Long balance;
+    private BigDecimal balance;
+
+    public Integer getCommission() {
+        return commission;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
 }

@@ -2,6 +2,7 @@ package com.task.test.footballmanager.mapper;
 
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 
 import com.task.test.footballmanager.dto.FootballClubDTO;
@@ -13,4 +14,7 @@ public interface FootballClubMapper {
     FootballClub dtoToEntity(FootballClubDTO commentDTO);
 
     FootballClubDTO entityToDto(FootballClub comment);
+
+    void updateFootballClub(@MappingTarget FootballClub footballClubFromDB,
+        FootballClubDTO newFootballClub);
 }

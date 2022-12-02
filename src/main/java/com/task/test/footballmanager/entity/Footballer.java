@@ -25,7 +25,25 @@ public class Footballer {
     private Integer age;
     @Column(nullable = false)
     private Integer experience;
+
     @ManyToOne
     @JoinColumn(name = "football_club_id", nullable = false, foreignKey = @ForeignKey(name = "fk_footballer_football_club"))
     private FootballClub footballClub;
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public FootballClub getFootballClub() {
+        return footballClub;
+    }
+
+    public void setFootballClub(
+        FootballClub footballClub) {
+        this.footballClub = footballClub;
+    }
 }

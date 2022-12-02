@@ -9,9 +9,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.task.test.footballmanager.exception.EntityAlreadyExistsException;
 import com.task.test.footballmanager.exception.EntityNotExistsException;
+import com.task.test.footballmanager.exception.InsufficientFundsException;
 import com.task.test.footballmanager.exception.InvalidEntityException;
 
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -33,7 +34,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidEntityException.class)
     protected ResponseEntity<Object> handleInvalidEntity(
         InvalidEntityException ex) {
-        ApiError apiError = new ApiError(NOT_ACCEPTABLE);
+        ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
@@ -41,7 +42,15 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityAlreadyExistsException.class)
     protected ResponseEntity<Object> handleEntityAlreadyExists(
         EntityAlreadyExistsException ex) {
-        ApiError apiError = new ApiError(NOT_ACCEPTABLE);
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    protected ResponseEntity<Object> handleInsufficientFunds(
+        InsufficientFundsException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
