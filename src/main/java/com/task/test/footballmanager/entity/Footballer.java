@@ -10,13 +10,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
+@Getter
+@Setter
 @Table(name = "FOOTBALLER")
 public class Footballer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long id;
+
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -29,21 +36,4 @@ public class Footballer {
     @ManyToOne
     @JoinColumn(name = "football_club_id", nullable = false, foreignKey = @ForeignKey(name = "fk_footballer_football_club"))
     private FootballClub footballClub;
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public Integer getExperience() {
-        return experience;
-    }
-
-    public FootballClub getFootballClub() {
-        return footballClub;
-    }
-
-    public void setFootballClub(
-        FootballClub footballClub) {
-        this.footballClub = footballClub;
-    }
 }

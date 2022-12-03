@@ -9,7 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
+@Getter
+@Setter
 @Table(name = "FOOTBALL_CLUB")
 public class FootballClub {
 
@@ -26,16 +31,4 @@ public class FootballClub {
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
-
-    public Integer getCommission() {
-        return commission;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
 }

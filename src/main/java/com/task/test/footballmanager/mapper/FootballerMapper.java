@@ -12,10 +12,10 @@ import com.task.test.footballmanager.entity.Footballer;
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface FootballerMapper {
     @Mapping(target = "footballClub.id", source = "clubId")
-    Footballer dtoToEntity(FootballerDTO commentDTO);
+    Footballer dtoToEntity(FootballerDTO footballerDTO);
 
     @Mapping(target = "clubId", source = "footballClub.id")
-    FootballerDTO entityToDto(Footballer comment);
+    FootballerDTO entityToDto(Footballer footballer);
 
     @Mapping(target = "footballClub.id", source = "clubId")
     void updateFootballer(@MappingTarget Footballer footballerFromDB,
