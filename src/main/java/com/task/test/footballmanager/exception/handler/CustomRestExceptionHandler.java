@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.task.test.footballmanager.exception.EntityAlreadyExistsException;
 import com.task.test.footballmanager.exception.EntityNotExistsException;
-import com.task.test.footballmanager.exception.InsufficientFundsException;
+import com.task.test.footballmanager.exception.InvalidTransferException;
 import com.task.test.footballmanager.exception.InvalidEntityException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -47,9 +47,9 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(InsufficientFundsException.class)
+    @ExceptionHandler(InvalidTransferException.class)
     protected ResponseEntity<Object> handleInsufficientFunds(
-        InsufficientFundsException ex) {
+        InvalidTransferException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);

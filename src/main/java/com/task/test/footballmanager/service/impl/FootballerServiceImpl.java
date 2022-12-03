@@ -2,6 +2,7 @@ package com.task.test.footballmanager.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,8 @@ import com.task.test.footballmanager.entity.FootballClub;
 import com.task.test.footballmanager.entity.Footballer;
 import com.task.test.footballmanager.exception.EntityAlreadyExistsException;
 import com.task.test.footballmanager.exception.EntityNotExistsException;
-import com.task.test.footballmanager.exception.InsufficientFundsException;
 import com.task.test.footballmanager.exception.InvalidEntityException;
+import com.task.test.footballmanager.exception.InvalidTransferException;
 import com.task.test.footballmanager.mapper.FootballerMapper;
 import com.task.test.footballmanager.repository.FootballClubRepository;
 import com.task.test.footballmanager.repository.FootballerRepository;
@@ -21,7 +22,10 @@ import com.task.test.footballmanager.service.FootballerService;
 
 @Service
 public class FootballerServiceImpl implements FootballerService {
-
+    public static final String SAME_CLUB_TRANSFER =
+        "Cannot commit the transfer to the same club";
+    public static final String INSUFFICIENT_FUNDS =
+        "Insufficient funds to commit the transfer for ";
     private static final String FOOTBALLER_NOT_FOUND_BY_ID =
         "Footballer not found by id: ";
     private static final String FOOTBALL_CLUB_NOT_FOUND_BY_ID =
@@ -30,7 +34,6 @@ public class FootballerServiceImpl implements FootballerService {
         "Footballer already exists by id: ";
     private static final String INVALID_FOOTBALLER_WITH =
         "Cannot add footballer with: ";
-
     private final FootballerRepository footballerRepository;
     private final FootballerMapper footballerMapper;
     private final FootballClubRepository footballClubRepository;
@@ -85,19 +88,23 @@ public class FootballerServiceImpl implements FootballerService {
     @Override
     @Transactional
     public FootballerDTO transferFootballer(Long id, Long newClubId) {
+        checkThatFootballerExists(id);
         Footballer footballer = footballerRepository.getReferenceById(id);
+
+        checkThatFootballClubExists(footballer.getFootballClub().getId());
         FootballClub clubFrom = footballer.getFootballClub();
+
+        checkThatFootballClubExists(newClubId);
+        FootballClub clubTo =
+            footballClubRepository.getReferenceById(newClubId);
+        checkThatClubsAreDifferent(clubFrom.getId(), clubTo.getId());
 
         BigDecimal transferCost = calculateTransferCost(footballer.getAge(),
             footballer.getExperience()).multiply(
             BigDecimal.valueOf(clubFrom.getCommission())
                 .divide(BigDecimal.valueOf(100L), new MathContext(2)));
 
-        FootballClub clubTo =
-            footballClubRepository.getReferenceById(newClubId);
-        if (clubTo.getBalance().compareTo(transferCost) < 1) {
-            throw new InsufficientFundsException();
-        }
+        checkThatClubCanPay(clubTo, transferCost);
         clubFrom.setBalance(clubFrom.getBalance().subtract(transferCost));
         clubTo.setBalance(clubTo.getBalance().add(transferCost));
         footballer.setFootballClub(clubTo);
@@ -105,6 +112,20 @@ public class FootballerServiceImpl implements FootballerService {
         footballClubRepository.save(clubTo);
         footballerRepository.save(footballer);
         return footballerMapper.entityToDto(footballer);
+    }
+
+    private void checkThatClubCanPay(FootballClub clubTo, BigDecimal transferCost) {
+        if (clubTo.getBalance().compareTo(transferCost) < 1) {
+            throw new InvalidTransferException(
+                INSUFFICIENT_FUNDS + transferCost);
+        }
+    }
+
+    private void checkThatClubsAreDifferent(Long clubFromId, Long clubToId) {
+        if (Objects.equals(clubFromId,
+            clubToId)) {
+            throw new InvalidTransferException(SAME_CLUB_TRANSFER);
+        }
     }
 
     private BigDecimal calculateTransferCost(Integer age, Integer exp) {
