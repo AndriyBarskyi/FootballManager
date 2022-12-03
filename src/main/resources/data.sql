@@ -1,0 +1,36 @@
+insert into football_club (id, balance, commission, name)
+values (1, 0, 6, 'Manchester United'),
+       (2, 100000000, 10, 'Chelsea'),
+       (3, 200000000, 0, 'Karpaty'),
+       (4, 50000000, 1, 'Arsenal'),
+       (5, 125000000, 2, 'Dynamo'),
+       (6, 2200000000, 5, 'Bayern'),
+       (7, 700000000, 4, 'PSG'),
+       (8, 23400000, 8, 'Dortmund'),
+       (9, 5200000, 3, 'Girona'),
+       (10, 750000000, 7, 'Milan'),
+       (11, 1012030040, 9, 'Juventus'),
+       (12, 850000000, 10, 'Monaco');
+
+insert into footballer (id, age, experience, name, surname, football_club_id)
+values (1, 18, 24, 'John', 'Doe', 12),
+       (2, 38, 242, 'Roger', 'Smith', 11),
+       (3, 17, 6, 'Jerry', 'Arnold', 10),
+       (4, 24, 68, 'Anton', 'Borsch', 9),
+       (5, 23, 50, 'Frederick', 'Hopkins', 8),
+       (6, 22, 51, 'David', 'Torres', 7),
+       (7, 20, 30, 'Andrew', 'Henderson', 6),
+       (8, 20, 14, 'Volodymyr', 'Pidlisnyi', 5),
+       (9, 34, 198, 'Stephen', 'Hawk', 4),
+       (10, 30, 124, 'Jack', 'London', 3),
+       (11, 31, 126, 'Trent', 'Smith-Row', 2),
+       (12, 25, 90, 'Leonard', 'Hilton', 1),
+       (13, 34, 200, 'Filip', 'Morris', 2),
+       (14, 23, 57, 'Jose', 'Rodrigues', 3),
+       (15, 26, 91, 'Patrick', 'Stuart', 4),
+       (16, 19, 25, 'David', 'Goggins', 5),
+       (17, 29, 125, 'Gavin', 'Smith', 6),
+       (18, 39, 250, 'Andriy', 'Shcherbyna', 7),
+       (19, 35, 224, 'Taylor', 'Kotlin', 8),
+       (20, 24, 79, 'Robert', 'Junior', null);
+

@@ -34,6 +34,6 @@ public class Footballer {
     private Integer experience;
 
     @ManyToOne
-    @JoinColumn(name = "football_club_id", nullable = false, foreignKey = @ForeignKey(name = "fk_footballer_football_club"))
+    @JoinColumn(name = "football_club_id", foreignKey = @ForeignKey(name = "fk_footballer_football_club"))
     private FootballClub footballClub;
 }
