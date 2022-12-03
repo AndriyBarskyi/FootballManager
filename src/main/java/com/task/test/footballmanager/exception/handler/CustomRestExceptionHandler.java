@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.task.test.footballmanager.exception.EntityAlreadyExistsException;
 import com.task.test.footballmanager.exception.EntityNotExistsException;
-import com.task.test.footballmanager.exception.InvalidTransferException;
 import com.task.test.footballmanager.exception.InvalidEntityException;
+import com.task.test.footballmanager.exception.InvalidTransferException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -34,14 +33,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidEntityException.class)
     protected ResponseEntity<Object> handleInvalidEntity(
         InvalidEntityException ex) {
-        ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setMessage(ex.getMessage());
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    protected ResponseEntity<Object> handleEntityAlreadyExists(
-        EntityAlreadyExistsException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);

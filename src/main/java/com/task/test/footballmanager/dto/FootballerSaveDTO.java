@@ -5,8 +5,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class FootballerDTO {
-    private String id;
+public class FootballerSaveDTO {
     @NotNull
     private String name;
     @NotNull

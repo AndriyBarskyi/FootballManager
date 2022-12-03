@@ -1,16 +1,17 @@
 package com.task.test.footballmanager.service;
 
 import com.task.test.footballmanager.dto.FootballClubDTO;
+import com.task.test.footballmanager.dto.FootballClubSaveDTO;
 
 public interface FootballClubService {
 
-    FootballClubDTO getFootballClubById(Long id);
+    FootballClubDTO getFootballClubById(String id);
 
-    void deleteFootballClub(Long id);
+    void deleteFootballClub(String id);
 
-    FootballClubDTO updateFootballClub(FootballClubDTO newFootballClub,
-        Long id);
+    FootballClubSaveDTO updateFootballClub(FootballClubSaveDTO newFootballClub,
+        String id);
 
-    FootballClubDTO addNewFootballClub(FootballClubDTO newFootballClub);
+    FootballClubSaveDTO addNewFootballClub(FootballClubSaveDTO newFootballClub);
 
 }

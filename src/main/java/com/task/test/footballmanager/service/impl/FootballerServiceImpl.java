@@ -3,15 +3,16 @@ package com.task.test.footballmanager.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Objects;
+import java.lang.String;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.task.test.footballmanager.dto.FootballerDTO;
+import com.task.test.footballmanager.dto.FootballerSaveDTO;
 import com.task.test.footballmanager.entity.FootballClub;
 import com.task.test.footballmanager.entity.Footballer;
-import com.task.test.footballmanager.exception.EntityAlreadyExistsException;
 import com.task.test.footballmanager.exception.EntityNotExistsException;
 import com.task.test.footballmanager.exception.InvalidEntityException;
 import com.task.test.footballmanager.exception.InvalidTransferException;
@@ -47,19 +48,19 @@ public class FootballerServiceImpl implements FootballerService {
         this.footballClubRepository = footballClubRepository;
     }
 
-    @Override public FootballerDTO getFootballerById(Long id) {
+    @Override public FootballerDTO getFootballerById(String id) {
         checkThatFootballerExists(id);
         return footballerMapper.entityToDto(footballerRepository
             .getReferenceById(id));
     }
 
-    @Override public void deleteFootballer(Long id) {
+    @Override public void deleteFootballer(String id) {
         checkThatFootballerExists(id);
         footballerRepository.deleteById(id);
     }
 
-    @Override public FootballerDTO updateFootballer(FootballerDTO newFootballer,
-        Long id) {
+    @Override public FootballerSaveDTO updateFootballer(FootballerSaveDTO newFootballer,
+        String id) {
         checkThatFootballerExists(id);
         checkThatAgeIsValid(newFootballer.getAge());
         checkThatFootballClubExists(newFootballer.getClubId());
@@ -68,26 +69,25 @@ public class FootballerServiceImpl implements FootballerService {
             .map(footballer -> {
                 footballerMapper.updateFootballer(footballer, newFootballer);
                 return footballerMapper
-                    .entityToDto(footballerRepository
+                    .entityToSaveDto(footballerRepository
                         .save(footballer));
             }).orElseThrow(EntityNotExistsException::new);
     }
 
     @Override
-    public FootballerDTO addNewFootballer(FootballerDTO newFootballer) {
-        checkThatFootballerNotExists(newFootballer.getId());
+    public FootballerSaveDTO addNewFootballer(FootballerSaveDTO newFootballer) {
         checkThatAgeIsValid(newFootballer.getAge());
         checkThatFootballClubExists(newFootballer.getClubId());
         checkThatExperienceIsValid(newFootballer.getExperience());
-        return footballerMapper.entityToDto(
+        return footballerMapper.entityToSaveDto(
             footballerRepository.save(
-                footballerMapper.dtoToEntity(newFootballer))
+                footballerMapper.saveDtoToEntity(newFootballer))
         );
     }
 
     @Override
     @Transactional
-    public FootballerDTO transferFootballer(Long id, Long newClubId) {
+    public FootballerDTO transferFootballer(String id, String newClubId) {
         checkThatFootballerExists(id);
         Footballer footballer = footballerRepository.getReferenceById(id);
 
@@ -114,14 +114,15 @@ public class FootballerServiceImpl implements FootballerService {
         return footballerMapper.entityToDto(footballer);
     }
 
-    private void checkThatClubCanPay(FootballClub clubTo, BigDecimal transferCost) {
+    private void checkThatClubCanPay(FootballClub clubTo,
+        BigDecimal transferCost) {
         if (clubTo.getBalance().compareTo(transferCost) < 1) {
             throw new InvalidTransferException(
                 INSUFFICIENT_FUNDS + transferCost);
         }
     }
 
-    private void checkThatClubsAreDifferent(Long clubFromId, Long clubToId) {
+    private void checkThatClubsAreDifferent(String clubFromId, String clubToId) {
         if (Objects.equals(clubFromId,
             clubToId)) {
             throw new InvalidTransferException(SAME_CLUB_TRANSFER);
@@ -150,20 +151,13 @@ public class FootballerServiceImpl implements FootballerService {
         }
     }
 
-    private void checkThatFootballerNotExists(Long id) {
-        if (footballerRepository.existsById(id)) {
-            throw new EntityAlreadyExistsException(
-                FOOTBALLER_ALREADY_EXISTS_BY_ID + id);
-        }
-    }
-
-    private void checkThatFootballerExists(Long id) {
+    private void checkThatFootballerExists(String id) {
         if (!footballerRepository.existsById(id)) {
             throw new EntityNotExistsException(FOOTBALLER_NOT_FOUND_BY_ID + id);
         }
     }
 
-    private void checkThatFootballClubExists(Long id) {
+    private void checkThatFootballClubExists(String id) {
         if (!footballClubRepository.existsById(id)) {
             throw new EntityNotExistsException(
                 FOOTBALL_CLUB_NOT_FOUND_BY_ID + id);

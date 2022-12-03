@@ -3,6 +3,7 @@ package com.task.test.footballmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.task.test.footballmanager.dto.FootballClubDTO;
+import com.task.test.footballmanager.dto.FootballClubSaveDTO;
 import com.task.test.footballmanager.service.FootballClubService;
 
 @RestController
@@ -28,27 +30,28 @@ public class FootballClubController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FootballClubDTO> getFootballClubById(
-        @PathVariable Long id) {
+        @PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(
             footballClubService.getFootballClubById(id));
     }
 
     @PostMapping
-    public ResponseEntity<FootballClubDTO> addNewFootballClub(
-        @RequestBody FootballClubDTO newFootballClub) {
+    public ResponseEntity<FootballClubSaveDTO> addNewFootballClub(
+        @RequestBody @Validated FootballClubSaveDTO newFootballClub) {
         return ResponseEntity.status(HttpStatus.OK).body(
             footballClubService.addNewFootballClub(newFootballClub));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFootballClub(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFootballClub(@PathVariable String id) {
         footballClubService.deleteFootballClub(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FootballClubDTO> updateFootballClub(
-        @RequestBody FootballClubDTO newFootballClub, @PathVariable Long id) {
+    public ResponseEntity<FootballClubSaveDTO> updateFootballClub(
+        @RequestBody @Validated FootballClubSaveDTO newFootballClub,
+        @PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(
             footballClubService.updateFootballClub(newFootballClub, id));
     }
