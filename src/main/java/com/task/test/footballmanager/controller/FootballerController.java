@@ -55,7 +55,7 @@ public class FootballerController {
             footballerService.updateFootballer(newFootballer, id));
     }
 
-    @PutMapping("/{footballerId}/footballClubs/{footballClubId}")
+    @PutMapping("/{footballerId}/football-clubs/{footballClubId}")
     public ResponseEntity<FootballerDTO> transferFootballer(
         @PathVariable String footballerId,
         @PathVariable String footballClubId) {

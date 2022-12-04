@@ -17,8 +17,6 @@ import com.task.test.footballmanager.service.FootballClubService;
 public class FootballClubServiceImpl implements FootballClubService {
     private static final String FOOTBALL_CLUB_NOT_FOUND_BY_ID =
         "Football club not found by id: ";
-    private static final String FOOTBALL_CLUB_ALREADY_EXISTS_BY_ID =
-        "Football club already exists by id: ";
     private static final String INVALID_FOOTBALL_CLUB_WITH =
         "Cannot add football club with: ";
     private final FootballClubRepository footballClubRepository;
