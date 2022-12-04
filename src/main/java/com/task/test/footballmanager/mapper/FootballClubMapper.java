@@ -9,7 +9,7 @@ import com.task.test.footballmanager.dto.FootballClubDTO;
 import com.task.test.footballmanager.dto.FootballClubSaveDTO;
 import com.task.test.footballmanager.entity.FootballClub;
 
-@Mapper(builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface FootballClubMapper {
 
     FootballClub dtoToEntity(FootballClubDTO footballClubDTO);
