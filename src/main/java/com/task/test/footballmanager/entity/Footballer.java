@@ -1,6 +1,6 @@
 package com.task.test.footballmanager.entity;
 
-import java.util.UUID;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Past;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -35,10 +36,12 @@ public class Footballer {
     private String name;
     @Column(nullable = false)
     private String surname;
+    @Past
     @Column(nullable = false)
-    private Integer age;
+    private LocalDate dateOfBirth;
+    @Past
     @Column(nullable = false)
-    private Integer experience;
+    private LocalDate careerStartDate;
 
     @ManyToOne
     @JoinColumn(name = "football_club_id", foreignKey = @ForeignKey(name = "fk_footballer_football_club"))

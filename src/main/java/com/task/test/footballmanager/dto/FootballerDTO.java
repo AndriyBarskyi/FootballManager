@@ -1,5 +1,7 @@
 package com.task.test.footballmanager.dto;
 
+import java.time.LocalDate;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -16,8 +18,8 @@ public class FootballerDTO {
     @NotNull
     private String surname;
     @NotNull
-    private Integer age;
+    private LocalDate dateOfBirth;
     @NotNull
-    private Integer experience;
+    private LocalDate careerStartDate;
     private String clubId;
 }

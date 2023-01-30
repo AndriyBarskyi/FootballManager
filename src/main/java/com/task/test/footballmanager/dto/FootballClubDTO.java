@@ -16,7 +16,7 @@ public class FootballClubDTO {
     @NotNull
     private String name;
     @NotNull
-    private Integer commission;
+    private Double commission;
     @NotNull
     private BigDecimal balance;
 }

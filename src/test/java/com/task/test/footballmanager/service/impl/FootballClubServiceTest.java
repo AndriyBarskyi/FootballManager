@@ -46,8 +46,8 @@ class FootballClubServiceTest {
     @InjectMocks
     private FootballClubServiceImpl underTest;
 
-    private static Stream<Integer> invalidCommissionDataProvider() {
-        return Stream.of(-5, -1, 11, 25);
+    private static Stream<Double> invalidCommissionDataProvider() {
+        return Stream.of(-5.0, -1.2, 11.6, 25.4);
     }
 
     private static Stream<BigDecimal> invalidBalanceDataProvider() {
@@ -59,7 +59,7 @@ class FootballClubServiceTest {
         String id = "123";
         String name = "Lviv";
         BigDecimal balance = BigDecimal.TEN;
-        Integer commission = 2;
+        Double commission = 2.0;
         FootballClubSaveDTO footballClubDTO =
             new FootballClubSaveDTO(name, commission, balance);
         FootballClub footballClub =
@@ -81,7 +81,7 @@ class FootballClubServiceTest {
 
     @ParameterizedTest
     @MethodSource("invalidCommissionDataProvider")
-    void cannotAddFootballClubWithInvalidCommission(Integer commission) {
+    void cannotAddFootballClubWithInvalidCommission(Double commission) {
         FootballClubSaveDTO footballClubDTO =
             new FootballClubSaveDTO("Lviv", commission, BigDecimal.TEN);
 
@@ -97,7 +97,7 @@ class FootballClubServiceTest {
     @MethodSource("invalidBalanceDataProvider")
     void cannotAddFootballClubWithInvalidBalance(BigDecimal balance) {
         FootballClubSaveDTO footballClubDTO =
-            new FootballClubSaveDTO("Lviv", 5, balance);
+            new FootballClubSaveDTO("Lviv", 5.4, balance);
 
         assertThatThrownBy(
             () -> underTest.addNewFootballClub(footballClubDTO))
@@ -111,7 +111,7 @@ class FootballClubServiceTest {
     void canGetFootballClub() {
         String id = "1";
         String name = "Name";
-        Integer commission = 5;
+        Double commission = 5.5;
         BigDecimal balance = BigDecimal.TEN;
         FootballClub footballClubFromDB =
             new FootballClub(id, name, commission, balance);
@@ -135,10 +135,10 @@ class FootballClubServiceTest {
         String name = "Name";
         BigDecimal balance = BigDecimal.TEN;
         FootballClub footballClubFromDB =
-            new FootballClub(id, name, 5, balance);
+            new FootballClub(id, name, 5.8, balance);
         footballClubFromDB.setBalance(balance);
         FootballClubSaveDTO newFootballClub =
-            new FootballClubSaveDTO(name, 1, balance);
+            new FootballClubSaveDTO(name, 1.1, balance);
 
         when(footballClubMapper.entityToSaveDto(any()))
             .thenReturn(newFootballClub);

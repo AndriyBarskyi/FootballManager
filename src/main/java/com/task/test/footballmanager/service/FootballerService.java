@@ -9,7 +9,8 @@ public interface FootballerService {
 
     void deleteFootballer(String id);
 
-    FootballerSaveDTO updateFootballer(FootballerSaveDTO newFootballer, String id);
+    FootballerSaveDTO updateFootballer(FootballerSaveDTO newFootballer,
+        String id);
 
     FootballerSaveDTO addNewFootballer(FootballerSaveDTO newFootballer);
 

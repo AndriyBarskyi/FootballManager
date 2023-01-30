@@ -2,7 +2,6 @@ package com.task.test.footballmanager.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,7 +38,7 @@ public class FootballClub {
     private String name;
 
     @Column(name = "commission", nullable = false)
-    private Integer commission;
+    private Double commission;
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
@@ -47,6 +46,14 @@ public class FootballClub {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "footballClub", cascade = CascadeType.PERSIST)
     @EqualsAndHashCode.Exclude
     private List<Footballer> footballers;
+
+    public FootballClub(String id, String name, Double commission,
+        BigDecimal balance) {
+        this.id = id;
+        this.name = name;
+        this.commission = commission;
+        this.balance = balance;
+    }
 
     @PreRemove
     private void preRemove() {

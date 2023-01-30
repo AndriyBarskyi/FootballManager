@@ -2,6 +2,8 @@ package com.task.test.footballmanager.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,23 @@ public class FootballerServiceImpl implements FootballerService {
         this.footballClubRepository = footballClubRepository;
     }
 
+    public static Integer calculateAge(LocalDate birthDate) {
+        if ((birthDate != null)) {
+            return Period.between(birthDate, LocalDate.now()).getYears();
+        } else {
+            return 0;
+        }
+    }
+
+    public static Integer calculateExperience(LocalDate birthDate,
+        LocalDate careerStart) {
+        if (birthDate != null && careerStart != null) {
+            return Period.between(birthDate, careerStart).getMonths();
+        } else {
+            return 0;
+        }
+    }
+
     @Override public FootballerDTO getFootballerById(String id) {
         checkThatFootballerExists(id);
         return footballerMapper.entityToDto(footballerRepository
@@ -62,11 +81,12 @@ public class FootballerServiceImpl implements FootballerService {
     public FootballerSaveDTO updateFootballer(FootballerSaveDTO newFootballer,
         String id) {
         checkThatFootballerExists(id);
-        checkThatAgeIsValid(newFootballer.getAge());
+        checkThatAgeIsValid(newFootballer.getDateOfBirth());
         if (newFootballer.getClubId() != null) {
             checkThatFootballClubExists(newFootballer.getClubId());
         }
-        checkThatExperienceIsValid(newFootballer.getExperience());
+        checkThatExperienceIsValid(newFootballer.getCareerStartDate(),
+            newFootballer.getDateOfBirth());
         return footballerRepository.findById(id)
             .map(footballer -> {
                 footballerMapper.updateFootballer(footballer, newFootballer);
@@ -78,8 +98,9 @@ public class FootballerServiceImpl implements FootballerService {
 
     @Override
     public FootballerSaveDTO addNewFootballer(FootballerSaveDTO newFootballer) {
-        checkThatAgeIsValid(newFootballer.getAge());
-        checkThatExperienceIsValid(newFootballer.getExperience());
+        checkThatAgeIsValid(newFootballer.getDateOfBirth());
+        checkThatExperienceIsValid(newFootballer.getCareerStartDate(),
+            newFootballer.getDateOfBirth());
         if (newFootballer.getClubId() != null) {
             checkThatFootballClubExists(newFootballer.getClubId());
         }
@@ -109,14 +130,17 @@ public class FootballerServiceImpl implements FootballerService {
         FootballClub clubFrom = footballer.getFootballClub();
         checkThatClubsAreDifferent(clubFrom.getId(), clubTo.getId());
 
-        BigDecimal transferCost = calculateTransferCost(footballer.getAge(),
-            footballer.getExperience()).multiply(
-            BigDecimal.valueOf(clubFrom.getCommission())
-                .divide(BigDecimal.valueOf(100L), new MathContext(2)));
+        BigDecimal finalTransferCost =
+            calculateTransferCost(footballer.getDateOfBirth(),
+                footballer.getCareerStartDate()).subtract(
+                calculateTransferCost(footballer.getDateOfBirth(),
+                    footballer.getCareerStartDate()).multiply(
+                        BigDecimal.valueOf(clubFrom.getCommission()))
+                    .divide(BigDecimal.valueOf(100L), new MathContext(2)));
 
-        checkThatClubCanPay(clubTo, transferCost);
-        clubFrom.setBalance(clubFrom.getBalance().subtract(transferCost));
-        clubTo.setBalance(clubTo.getBalance().add(transferCost));
+        checkThatClubCanPay(clubTo, finalTransferCost);
+        clubFrom.setBalance(clubFrom.getBalance().add(finalTransferCost));
+        clubTo.setBalance(clubTo.getBalance().subtract(finalTransferCost));
         footballer.setFootballClub(clubTo);
         footballClubRepository.save(clubFrom);
         footballClubRepository.save(clubTo);
@@ -140,25 +164,32 @@ public class FootballerServiceImpl implements FootballerService {
         }
     }
 
-    private BigDecimal calculateTransferCost(Integer age, Integer exp) {
+    private BigDecimal calculateTransferCost(LocalDate dateOfBirth,
+        LocalDate careerStart) {
         final int TRANSFER_DEFAULT_SUM = 100000;
-        return BigDecimal.valueOf((long) exp * TRANSFER_DEFAULT_SUM)
-            .divide(BigDecimal.valueOf(age),
+        return BigDecimal.valueOf(
+                (long) calculateExperience(dateOfBirth, careerStart)
+                    * TRANSFER_DEFAULT_SUM)
+            .divide(BigDecimal.valueOf(calculateAge(dateOfBirth)),
                 new MathContext(2));
     }
 
-    private void checkThatExperienceIsValid(Integer experience) {
-        if (experience < 0 || experience > 600) {
+    private void checkThatExperienceIsValid(LocalDate careerStart,
+        LocalDate dateOfBirth) {
+        if (dateOfBirth.isAfter(careerStart) || careerStart.isAfter(
+            LocalDate.now())) {
             throw new InvalidEntityException(
-                INVALID_FOOTBALLER_WITH + " experience equal to " + experience
+                INVALID_FOOTBALLER_WITH + " career start date equal to "
+                    + careerStart
             );
         }
     }
 
-    private void checkThatAgeIsValid(Integer age) {
-        if (age < 10 || age > 60) {
+    private void checkThatAgeIsValid(LocalDate dateOfBirth) {
+        if (dateOfBirth.isAfter(LocalDate.now())) {
             throw new InvalidEntityException(
-                INVALID_FOOTBALLER_WITH + "age equal to " + age);
+                INVALID_FOOTBALLER_WITH + " date of birth equal to "
+                    + dateOfBirth);
         }
     }
 

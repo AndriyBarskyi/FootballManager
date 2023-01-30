@@ -1,12 +1,14 @@
 package com.task.test.footballmanager.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
@@ -37,16 +39,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FootballerServiceTest {
+    public static final String INSUFFICIENT_FUNDS =
+        "Insufficient funds to commit the transfer for ";
+    public static final String SAME_CLUB_TRANSFER =
+        "Cannot commit the transfer to the same club";
     private static final String INVALID_FOOTBALLER_WITH =
         "Cannot add footballer with: ";
     private static final String FOOTBALLER_NOT_FOUND_BY_ID =
         "Footballer not found by id: ";
     private static final String FOOTBALL_CLUB_NOT_FOUND_BY_ID =
         "Football club not found by id: ";
-    public static final String INSUFFICIENT_FUNDS =
-        "Insufficient funds to commit the transfer for ";
-    public static final String SAME_CLUB_TRANSFER =
-        "Cannot commit the transfer to the same club";
     @Mock
     private FootballerRepository footballerRepository;
     @Mock
@@ -57,20 +59,21 @@ class FootballerServiceTest {
     @InjectMocks
     private FootballerServiceImpl underTest;
 
-    private static Stream<Integer> invalidAgeDataProvider() {
-        return Stream.of(-5, 9, 61, 120);
-    }
-
-    private static Stream<Integer> invalidExperienceDataProvider() {
-        return Stream.of(-10, -1, 601, 900);
+    private static Stream<Arguments> invalidExperienceDataProvider() {
+        return Stream.of(
+            Arguments.of(LocalDate.of(2008, 11, 6), LocalDate.of(1992, 6, 16)),
+            Arguments.of(LocalDate.of(1992, 11, 6), LocalDate.of(1992, 11, 5)),
+            Arguments.of(LocalDate.of(1992, 11, 6), LocalDate.now().plusDays(1)));
     }
 
     @Test
     void canAddNewFootballerWithoutTheClub() {
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200, null);
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), null);
         FootballerSaveDTO validFootballerSaveDTO =
-            new FootballerSaveDTO("John", "Doe", 25, 200, null);
+            new FootballerSaveDTO("John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), null);
         when(footballerMapper.saveDtoToEntity(any()))
             .thenReturn(validFootballer);
 
@@ -88,10 +91,12 @@ class FootballerServiceTest {
     @Test
     void canAddNewFootballerWithTheClub() {
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
-                new FootballClub("123", "Name", 4, BigDecimal.TEN));
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
+                new FootballClub("123", "Name", 4.3, BigDecimal.TEN));
         FootballerSaveDTO validFootballerSaveDTO =
-            new FootballerSaveDTO("John", "Doe", 25, 200, "123");
+            new FootballerSaveDTO("John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), "123");
         when(footballerMapper.saveDtoToEntity(any()))
             .thenReturn(validFootballer);
         when(footballClubRepository.existsById(anyString())).thenReturn(true);
@@ -107,11 +112,10 @@ class FootballerServiceTest {
             validFootballer);
     }
 
-    @ParameterizedTest
-    @MethodSource("invalidAgeDataProvider")
-    void cannotAddFootballerWithInvalidAge(Integer age) {
+    void cannotAddFootballerWithInvalidAge() {
         FootballerSaveDTO footballerDTO =
-            new FootballerSaveDTO("Anton", "Bobyk", age, 140, null);
+            new FootballerSaveDTO("Anton", "Bobyk", LocalDate.now().plusDays(1),
+                LocalDate.of(2008, 6, 16), null);
 
         assertThatThrownBy(
             () -> underTest.addNewFootballer(footballerDTO))
@@ -123,9 +127,11 @@ class FootballerServiceTest {
 
     @ParameterizedTest
     @MethodSource("invalidExperienceDataProvider")
-    void cannotAddFootballerWithInvalidExperience(Integer experience) {
+    void cannotAddFootballerWithInvalidExperience(LocalDate dateOfBirth,
+        LocalDate careerStartDate) {
         FootballerSaveDTO footballerDTO =
-            new FootballerSaveDTO("Anton", "Bobyk", 35, experience, null);
+            new FootballerSaveDTO("Anton", "Bobyk", dateOfBirth,
+                careerStartDate, null);
 
         assertThatThrownBy(
             () -> underTest.addNewFootballer(footballerDTO))
@@ -138,7 +144,8 @@ class FootballerServiceTest {
     @Test
     void cannotAddFootballerWithNotExistingClub() {
         FootballerSaveDTO footballerDTO =
-            new FootballerSaveDTO("Anton", "Bobyk", 35, 200, "1234");
+            new FootballerSaveDTO("Anton", "Bobyk", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), "1234");
 
         assertThatThrownBy(
             () -> underTest.addNewFootballer(footballerDTO))
@@ -151,9 +158,11 @@ class FootballerServiceTest {
     @Test
     void canGetFootballer() {
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200, null);
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), null);
         FootballerDTO validFootballerDTO =
-            new FootballerDTO("123", "John", "Doe", 25, 200, null);
+            new FootballerDTO("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), null);
         when(footballerRepository.getReferenceById(any()))
             .thenReturn(validFootballer);
         when(footballerRepository.existsById(any())).thenReturn(true);
@@ -168,10 +177,12 @@ class FootballerServiceTest {
     @Test
     void canUpdateFootballer() {
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
-                new FootballClub("1234", "Name", 4, BigDecimal.TEN));
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
+                new FootballClub("1234", "Name", 4.25, BigDecimal.TEN));
         FootballerSaveDTO validFootballerSaveDTO =
-            new FootballerSaveDTO("John", "Doe", 25, 200, "1234");
+            new FootballerSaveDTO("John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), "1234");
         when(footballerMapper.entityToSaveDto(any()))
             .thenReturn(validFootballerSaveDTO);
         when(footballerRepository.findById(any()))
@@ -205,14 +216,18 @@ class FootballerServiceTest {
     @Test
     void canCommitTheTransfer() {
         FootballClub clubFrom =
-            new FootballClub("12345", "Name", 4, BigDecimal.valueOf(100000000));
+            new FootballClub("12345", "Name", 4.55,
+                BigDecimal.valueOf(100000000));
         FootballClub clubTo =
-            new FootballClub("12347", "Name", 4, BigDecimal.valueOf(200000000));
+            new FootballClub("12347", "Name", 4.1,
+                BigDecimal.valueOf(200000000));
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
                 clubFrom);
         FootballerDTO validFootballerDTO =
-            new FootballerDTO("123", "John", "Doe", 25, 200, clubTo.getId());
+            new FootballerDTO("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), clubTo.getId());
 
         when(footballerRepository.getReferenceById(validFootballer.getId()))
             .thenReturn(validFootballer);
@@ -233,12 +248,15 @@ class FootballerServiceTest {
     @Test
     void canCommitTheFreeAgentTransfer() {
         FootballClub clubTo =
-            new FootballClub("12347", "Name", 4, BigDecimal.valueOf(200000000));
+            new FootballClub("12347", "Name", 4.4,
+                BigDecimal.valueOf(200000000));
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
                 null);
         FootballerDTO validFootballerDTO =
-            new FootballerDTO("123", "John", "Doe", 25, 200, clubTo.getId());
+            new FootballerDTO("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16), clubTo.getId());
 
         when(footballerRepository.getReferenceById(validFootballer.getId()))
             .thenReturn(validFootballer);
@@ -259,11 +277,13 @@ class FootballerServiceTest {
     @Test
     void cannotCommitTheTransferToTheClubThatCannotPayForIt() {
         FootballClub clubFrom =
-            new FootballClub("12345", "Name", 4, BigDecimal.valueOf(100000000));
+            new FootballClub("12345", "Name", 4.6,
+                BigDecimal.valueOf(100000000));
         FootballClub clubTo =
-            new FootballClub("12347", "Name", 4, BigDecimal.valueOf(2000));
+            new FootballClub("12347", "Name", 4.1, BigDecimal.valueOf(2000));
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
                 clubFrom);
 
         when(footballerRepository.getReferenceById(validFootballer.getId()))
@@ -274,7 +294,8 @@ class FootballerServiceTest {
         when(footballClubRepository.existsById(anyString())).thenReturn(true);
 
         assertThatThrownBy(
-            () -> underTest.transferFootballer(validFootballer.getId(), clubTo.getId()))
+            () -> underTest.transferFootballer(validFootballer.getId(),
+                clubTo.getId()))
             .isInstanceOf(InvalidTransferException.class)
             .hasMessageContaining(INSUFFICIENT_FUNDS);
         verify(footballerRepository, never()).save(any(Footballer.class));
@@ -283,9 +304,11 @@ class FootballerServiceTest {
     @Test
     void cannotCommitTheTransferToTheSameClub() {
         FootballClub clubFrom =
-            new FootballClub("12345", "Name", 4, BigDecimal.valueOf(100000000));
+            new FootballClub("12345", "Name", 4.2,
+                BigDecimal.valueOf(100000000));
         Footballer validFootballer =
-            new Footballer("123", "John", "Doe", 25, 200,
+            new Footballer("123", "John", "Doe", LocalDate.of(1992, 11, 6),
+                LocalDate.of(2008, 6, 16),
                 clubFrom);
 
         when(footballerRepository.getReferenceById(validFootballer.getId()))
@@ -296,7 +319,8 @@ class FootballerServiceTest {
         when(footballClubRepository.existsById(anyString())).thenReturn(true);
 
         assertThatThrownBy(
-            () -> underTest.transferFootballer(validFootballer.getId(), clubFrom.getId()))
+            () -> underTest.transferFootballer(validFootballer.getId(),
+                clubFrom.getId()))
             .isInstanceOf(InvalidTransferException.class)
             .hasMessageContaining(SAME_CLUB_TRANSFER);
         verify(footballerRepository, never()).save(any(Footballer.class));

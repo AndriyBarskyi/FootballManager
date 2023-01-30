@@ -1,5 +1,7 @@
 package com.task.test.footballmanager.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +52,7 @@ public class FootballClubController {
 
     @PutMapping("/{id}")
     public ResponseEntity<FootballClubSaveDTO> updateFootballClub(
-        @RequestBody @Validated FootballClubSaveDTO newFootballClub,
+        @RequestBody @Valid FootballClubSaveDTO newFootballClub,
         @PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(
             footballClubService.updateFootballClub(newFootballClub, id));

@@ -84,8 +84,8 @@ public class FootballClubServiceImpl implements FootballClubService {
         }
     }
 
-    private void checkThatClubCommissionIsValid(Integer commission) {
-        if (commission < 0 || commission > 10) {
+    private void checkThatClubCommissionIsValid(Double commission) {
+        if (commission < 0.0 || commission > 10.0) {
             throw new InvalidEntityException(
                 INVALID_FOOTBALL_CLUB_WITH + "commission " + commission);
         }
